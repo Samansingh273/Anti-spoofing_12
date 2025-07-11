@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Face Match Gallery</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Face Liveness Capture Gallery</h1>
+        <div class="button-group">
+            <button onclick="startMain()">Start Detection</button>
+            <button onclick="stopMain()">Stop Detection</button>
+        </div>
+        <div id="status"></div>
+        <div class="gallery" id="gallery"></div>
+    </div>
+
+    <script>
+        async function startMain() {
+            const res = await fetch("/start");
+            const data = await res.json();
+            document.getElementById("status").innerText = data.status;
+        }
+
+        async function stopMain() {
+            const res = await fetch("/stop");
+            const data = await res.json();
+            document.getElementById("status").innerText = data.status;
+        }
+
+        async function loadCaptures() {
+            const res = await fetch("/captures");
+            const data = await res.json();
+            const gallery = document.getElementById("gallery");
+            gallery.innerHTML = "";
+
+            data.forEach(item => {
+                const card = document.createElement("div");
+                card.className = "card";
+
+                const img = document.createElement("img");
+                img.src = `/captures/${item.filename}`;
+                img.alt = item.filename;
+                img.className = "thumb " + (item.match === "Unknown" ? "unknown" : "matched");
+
+                const label = document.createElement("p");
+                label.textContent = `Matched: ${item.match}`;
+
+                card.appendChild(img);
+                card.appendChild(label);
+                gallery.appendChild(card);
+            });
+        }
+
+        setInterval(loadCaptures, 5000);
+        loadCaptures();
+    </script>
+</body>
+</html>
