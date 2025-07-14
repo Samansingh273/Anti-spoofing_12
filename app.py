@@ -17,16 +17,20 @@ def start():
     global main_process
     if main_process is None or main_process.poll() is not None:
         main_process = subprocess.Popen(["python", "main.py"])
+        print("[INFO] Started main.py")
         return jsonify({"status": "Started main.py"})
+    print("[INFO] main.py already running")
     return jsonify({"status": "main.py already running"})
 
 @app.route('/stop')
 def stop():
     global main_process
+    print(f"[DEBUG] Attempting to stop. main_process = {main_process}")
     if main_process and main_process.poll() is None:
         main_process.kill()
         main_process.wait()
         main_process = None
+        print("[INFO] Forcefully stopped main.py")
         return jsonify({"status": "Forcefully stopped main.py"})
     return jsonify({"status": "main.py is not running"})
 
@@ -63,4 +67,5 @@ def get_image(filename):
     return send_from_directory(CAPTURE_DIR, filename)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, use_reloader=False)
+
