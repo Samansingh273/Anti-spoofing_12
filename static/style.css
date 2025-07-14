@@ -35,6 +35,11 @@ button:hover {
     background-color: #0056b3;
 }
 
+button:disabled {
+    background-color: #999;
+    cursor: not-allowed;
+}
+
 #status {
     font-weight: bold;
     color: #333;
