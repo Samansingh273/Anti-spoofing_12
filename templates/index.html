@@ -8,8 +8,8 @@
     <div class="container">
         <h1>Face Liveness Capture Gallery</h1>
         <div class="button-group">
-            <button onclick="startMain()">Start Detection</button>
-            <button onclick="stopMain()">Stop Detection</button>
+            <button id="startBtn" onclick="startMain()">Start Detection</button>
+            <button id="stopBtn" onclick="stopMain()">Stop Detection</button>
         </div>
         <div id="status"></div>
         <div class="gallery" id="gallery"></div>
@@ -17,19 +17,35 @@
 
     <script>
         async function startMain() {
-            const res = await fetch("/start");
-            const data = await res.json();
-            document.getElementById("status").innerText = data.status;
+            const btn = document.getElementById("startBtn");
+            btn.disabled = true;
+            btn.textContent = "Starting...";
+            try {
+                const res = await fetch("/start?" + Date.now());
+                const data = await res.json();
+                document.getElementById("status").innerText = data.status;
+            } finally {
+                btn.disabled = false;
+                btn.textContent = "Start Detection";
+            }
         }
 
         async function stopMain() {
-            const res = await fetch("/stop");
-            const data = await res.json();
-            document.getElementById("status").innerText = data.status;
+            const btn = document.getElementById("stopBtn");
+            btn.disabled = true;
+            btn.textContent = "Stopping...";
+            try {
+                const res = await fetch("/stop?" + Date.now());
+                const data = await res.json();
+                document.getElementById("status").innerText = data.status;
+            } finally {
+                btn.disabled = false;
+                btn.textContent = "Stop Detection";
+            }
         }
 
         async function loadCaptures() {
-            const res = await fetch("/captures");
+            const res = await fetch("/captures?" + Date.now());
             const data = await res.json();
             const gallery = document.getElementById("gallery");
             gallery.innerHTML = "";
@@ -57,3 +73,4 @@
     </script>
 </body>
 </html>
+
